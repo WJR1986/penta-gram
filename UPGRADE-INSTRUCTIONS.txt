@@ -1,0 +1,46 @@
+WORD LEAGUE - STAGE 2B UPGRADE
+================================
+
+This upgrade is designed for an existing working Stage 2 project.
+It does NOT replace js/config.js, so your Supabase URL/key remain untouched.
+It also keeps the same local game cache namespace, so existing Stage 2 games stay.
+
+DO THIS IN THIS ORDER
+---------------------
+
+1. Make a quick backup copy of your current Word League project folder.
+
+2. In Supabase:
+   SQL Editor > New query
+   Open supabase/stage2b_upgrade.sql from this upgrade pack.
+   Copy the entire file into Supabase and press Run.
+
+   This only adds profile-picture fields and permissions. It does not delete or
+   reset game_sessions or existing stats.
+
+3. Copy the files/folders from this upgrade pack into your EXISTING project.
+   Allow Windows to replace files when asked.
+
+   Important: this upgrade pack deliberately contains NO js/config.js.
+   Your already-working Supabase configuration is therefore preserved.
+
+4. In VS Code, right-click index.html > Open with Live Server.
+   Hard refresh once with Ctrl+F5.
+
+5. Test:
+   - Your existing Will game/progress should still be present.
+   - Click the little profile circle/name at top-right.
+   - Choose "Choose image" and select a JPEG/PNG/WebP.
+   - The preview should become square.
+   - Click "Save picture".
+   - Open an Incognito/InPrivate window, choose the same player, and confirm
+     the picture appears there too.
+   - Check Today and Stats: the avatar should appear beside the player.
+
+PRESET AVATARS
+--------------
+Twenty slots are already built, but deliberately disabled because no artwork
+has been supplied. See assets/avatars/README.txt.
+
+When the real images are available, they can be added as avatar-01.webp through
+avatar-20.webp and enabled in js/profiles.js.
