@@ -49,22 +49,15 @@
         <p id="game-date" class="eyebrow"></p>
         <h2 id="play-heading">Today's word</h2>
         <p class="subtle">Six attempts. UK-English word list. Same word for everyone.</p>
-        <p id="sync-status" class="sync-status">Checking storage…</p>
+        <div class="game-status-row">
+          <p id="sync-status" class="sync-status">Checking storage…</p>
+          <button id="view-result-btn" class="result-chip hidden" type="button">View result</button>
+        </div>
       </div>
 
       <div id="message" class="message" role="status" aria-live="polite"></div>
       <div id="board" class="board" aria-label="Word grid"></div>
       <div id="keyboard" class="keyboard" aria-label="On-screen keyboard"></div>
-
-      <div id="finished-panel" class="finished-panel hidden">
-        <h3 id="finished-title"></h3>
-        <p id="finished-copy"></p>
-        <div class="finished-actions">
-          <button id="copy-result-btn" class="primary-button" type="button">Copy result</button>
-          <button id="define-word-btn" class="secondary-button" type="button">What does it mean?</button>
-        </div>
-        <div id="definition-panel" class="definition-panel hidden" aria-live="polite"></div>
-      </div>
     </section>
 
     <section id="view-today" class="view" aria-labelledby="today-heading">
@@ -114,6 +107,29 @@
       </div>
     </section>
   </main>
+
+  <div id="result-overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="finished-title">
+    <div class="result-card">
+      <button id="close-result-btn" class="close-button" type="button" aria-label="Close result">×</button>
+      <p class="eyebrow">TODAY'S RESULT</p>
+      <h2 id="finished-title"></h2>
+      <p id="finished-copy" class="result-answer"></p>
+
+      <div id="result-grid-preview" class="result-grid-preview" aria-label="Your result grid"></div>
+
+      <div class="result-actions">
+        <button id="copy-result-btn" class="primary-button" type="button">Copy result</button>
+      </div>
+
+      <div class="result-divider" aria-hidden="true"></div>
+
+      <section class="meaning-section" aria-labelledby="meaning-title">
+        <p class="eyebrow">WORD MEANING</p>
+        <h3 id="meaning-title">What does today's word mean?</h3>
+        <div id="definition-panel" class="definition-panel" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
 
   <div id="profile-overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="profile-title">
     <div class="profile-card">

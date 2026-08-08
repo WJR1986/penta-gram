@@ -1,0 +1,21 @@
+WORD LEAGUE — STAGE 2E: RESULT + DICTIONARY MODAL
+
+This upgrade replaces the in-page completion/result panel with a modal.
+
+Changes:
+- Completing the daily game automatically opens one combined result modal.
+- The modal shows score, answer, a miniature colour-result grid and Copy result.
+- The word definition loads automatically inside the same modal.
+- Closing the modal no longer pushes the board/keyboard down the page.
+- A compact "Result 4/6" (or equivalent) button appears beside cloud sync after completion so the modal can be reopened.
+- Click outside the modal, press Escape, or use the X button to close it.
+- Light/dark mode styling is supported.
+
+INSTALL
+1. Back up your current Word League project.
+2. Copy index.html, css/style.css and js/app.js from this upgrade over the matching files in your project.
+3. Do NOT change config.js, database files, words.js or Supabase.
+4. Ctrl+F5 / hard refresh after copying.
+
+No SQL changes are required.
+No game history, stats, profile images, dictionary data, or Supabase configuration are changed.

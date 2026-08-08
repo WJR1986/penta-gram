@@ -75,6 +75,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+body.modal-open { overflow: hidden; }
+
 button, input { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, input:focus-visible, a:focus-visible {
@@ -241,6 +243,31 @@ h3 { color: var(--text); }
   line-height: 1.42;
 }
 
+.game-status-row {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.result-chip {
+  min-height: 24px;
+  margin: 6px 0 0;
+  padding: 4px 9px;
+  border: 1px solid color-mix(in srgb, var(--present) 40%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--present) 13%, var(--surface));
+  color: var(--text);
+  cursor: pointer;
+  font-size: .69rem;
+  font-weight: 850;
+  transition: transform .1s ease, background .15s ease;
+}
+.result-chip:hover { background: color-mix(in srgb, var(--present) 20%, var(--surface)); }
+.result-chip:active { transform: scale(.97); }
+
 .sync-status {
   display: inline-flex;
   align-items: center;
@@ -356,23 +383,61 @@ h3 { color: var(--text); }
 .key.present { background: var(--present); }
 .key.absent { background: var(--absent); }
 
-.finished-panel {
-  margin: 18px auto 0;
-  padding: 18px;
-  max-width: 420px;
+.result-card {
+  width: min(100%, 460px);
+  max-height: min(90dvh, 760px);
+  position: relative;
+  overflow-y: auto;
+  padding: 26px;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface-raised);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-lg);
   text-align: center;
+  overscroll-behavior: contain;
 }
-.finished-panel h3 { margin: 0 0 6px; }
-.finished-panel p { margin: 0 0 14px; }
-.finished-actions {
+.result-card h2 { margin-bottom: 5px; }
+.result-answer {
+  margin: 0;
+  color: var(--muted);
+  font-size: .92rem;
+}
+.result-grid-preview {
+  width: fit-content;
+  margin: 18px auto;
+  display: grid;
+  gap: 4px;
+}
+.result-grid-row {
+  display: grid;
+  grid-template-columns: repeat(5, 18px);
+  gap: 4px;
+}
+.result-grid-square {
+  width: 18px;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: var(--absent);
+}
+.result-grid-square.correct { background: var(--correct); }
+.result-grid-square.present { background: var(--present); }
+.result-grid-square.absent { background: var(--absent); }
+.result-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
   justify-content: center;
+}
+.result-actions .primary-button { min-width: 150px; }
+.result-divider {
+  height: 1px;
+  margin: 22px 0;
+  background: var(--border);
+}
+.meaning-section { text-align: left; }
+.meaning-section > .eyebrow { text-align: center; }
+.meaning-section > h3 {
+  margin: 3px 0 12px;
+  text-align: center;
+  font-size: 1.02rem;
 }
 .hidden { display: none !important; }
 
@@ -637,7 +702,7 @@ h3 { color: var(--text); }
 }
 
 .definition-panel {
-  margin-top: 16px;
+  margin-top: 0;
   padding: 15px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -674,7 +739,9 @@ h3 { color: var(--text); }
   .game-heading .subtle { display: none; }
   .game-heading h2 { margin-bottom: 2px; font-size: 1.08rem; }
   .game-heading .eyebrow { font-size: .63rem; }
+  .game-status-row { min-height: 24px; gap: 4px; }
   .sync-status { margin-top: 3px; min-height: 20px; padding: 2px 7px; font-size: .62rem; }
+  .result-chip { margin-top: 3px; min-height: 20px; padding: 2px 7px; font-size: .62rem; }
   .message { min-height: 23px; margin-bottom: 3px; font-size: .78rem; }
 
   .board { width: min(320px, 88vw, 39dvh); }
@@ -688,6 +755,7 @@ h3 { color: var(--text); }
   .leader-row.header { font-size: .64rem; }
   .avatar-medium { width: 36px; height: 36px; }
   .profile-card { padding: 24px 17px; }
+  .result-card { padding: 24px 18px; max-height: 92dvh; }
   .preset-avatar-grid { gap: 6px; }
 }
 
@@ -701,7 +769,7 @@ h3 { color: var(--text); }
   .app-shell { padding-top: 5px; }
   .game-heading h2 { font-size: .98rem; }
   .game-heading .eyebrow { margin-bottom: 1px; }
-  .sync-status { margin-top: 2px; }
+  .sync-status, .result-chip { margin-top: 2px; }
   .message { min-height: 20px; margin-bottom: 2px; }
   .board {
     width: min(292px, 86vw, 36.5dvh);

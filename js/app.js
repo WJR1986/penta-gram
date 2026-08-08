@@ -14,11 +14,13 @@ window.WordLeague = window.WordLeague || {};
   const themeIcon = document.getElementById("theme-icon");
   const themeColorMeta = document.getElementById("theme-color-meta");
   const gameDateEl = document.getElementById("game-date");
-  const finishedPanel = document.getElementById("finished-panel");
+  const resultOverlay = document.getElementById("result-overlay");
+  const viewResultBtn = document.getElementById("view-result-btn");
+  const closeResultBtn = document.getElementById("close-result-btn");
   const finishedTitle = document.getElementById("finished-title");
   const finishedCopy = document.getElementById("finished-copy");
+  const resultGridPreview = document.getElementById("result-grid-preview");
   const copyResultBtn = document.getElementById("copy-result-btn");
-  const defineWordBtn = document.getElementById("define-word-btn");
   const definitionPanel = document.getElementById("definition-panel");
   const todayList = document.getElementById("today-list");
   const leaderboard = document.getElementById("leaderboard");
@@ -46,6 +48,7 @@ window.WordLeague = window.WordLeague || {};
   let currentInput = "";
   let profilesByPlayer = new Map();
   let pendingAvatar = null;
+  let definitionLoadedFor = null;
 
   async function init() {
     initTheme();
@@ -57,7 +60,11 @@ window.WordLeague = window.WordLeague || {};
     switchPlayerBtn.addEventListener("click", () => showPlayerOverlay(true));
     themeToggle.addEventListener("click", toggleTheme);
     copyResultBtn.addEventListener("click", copyResult);
-    defineWordBtn.addEventListener("click", defineFinishedWord);
+    viewResultBtn.addEventListener("click", openResultModal);
+    closeResultBtn.addEventListener("click", closeResultModal);
+    resultOverlay.addEventListener("click", (event) => {
+      if (event.target === resultOverlay) closeResultModal();
+    });
     profileButton.addEventListener("click", openProfile);
     editProfileBtn.addEventListener("click", openProfile);
     closeProfileBtn.addEventListener("click", () => showProfileOverlay(false));
@@ -123,6 +130,7 @@ window.WordLeague = window.WordLeague || {};
   }
 
   async function selectPlayer(player) {
+    closeResultModal();
     currentPlayer = player;
     Storage.setSelectedPlayer(player);
     playerBadge.textContent = player;
@@ -156,7 +164,7 @@ window.WordLeague = window.WordLeague || {};
   function renderGame() {
     renderBoard();
     renderKeyboardStates();
-    renderFinishedPanel();
+    renderCompletionUI();
   }
 
   async function refreshSharedViews() {
@@ -244,7 +252,12 @@ window.WordLeague = window.WordLeague || {};
 
   function bindPhysicalKeyboard() {
     document.addEventListener("keydown", (event) => {
-      if (!playerOverlay.classList.contains("hidden") || !profileOverlay.classList.contains("hidden")) return;
+      if (event.key === "Escape" && !resultOverlay.classList.contains("hidden")) {
+        closeResultModal();
+        return;
+      }
+
+      if (!playerOverlay.classList.contains("hidden") || !profileOverlay.classList.contains("hidden") || !resultOverlay.classList.contains("hidden")) return;
 
       if (event.key === "Enter") handleKey("ENTER");
       else if (event.key === "Backspace") handleKey("BACK");
@@ -287,8 +300,8 @@ window.WordLeague = window.WordLeague || {};
     updateSyncStatus();
 
     if (game.completed) {
-      if (game.won) showMessage(`Nice — ${game.guesses.length}/6.`, false);
-      else showMessage(`The word was ${result.answer}.`, false);
+      clearMessage();
+      openResultModal();
     } else if (saveResult.cloud && !saveResult.ok) {
       showMessage("Guess saved on this PC; cloud sync will retry later.", true);
     } else {
@@ -298,31 +311,71 @@ window.WordLeague = window.WordLeague || {};
     await refreshSharedViews();
   }
 
-  function renderFinishedPanel() {
-    if (!game.completed) {
-      finishedPanel.classList.add("hidden");
+  function renderCompletionUI() {
+    if (!game?.completed) {
+      viewResultBtn.classList.add("hidden");
       return;
     }
 
-    finishedPanel.classList.remove("hidden");
     const answer = Game.answerForDate(game.dateKey);
-    finishedTitle.textContent = game.won ? `${Game.resultLabel(game)} — well played` : "Game over";
+    const resultLabel = Game.resultLabel(game);
+
+    viewResultBtn.classList.remove("hidden");
+    viewResultBtn.textContent = game.won ? `Result ${resultLabel}` : "View result";
+
+    finishedTitle.textContent = game.won ? `${resultLabel} — well played` : "Game over";
     finishedCopy.textContent = game.won
       ? `Today's word was ${answer}.`
       : `Today's word was ${answer}. Better luck tomorrow.`;
-    defineWordBtn.textContent = `What does ${answer} mean?`;
-    defineWordBtn.disabled = false;
-    definitionPanel.classList.add("hidden");
-    definitionPanel.replaceChildren();
+
+    renderResultGridPreview();
+
+    if (definitionLoadedFor !== answer) {
+      definitionLoadedFor = null;
+      definitionPanel.replaceChildren();
+    }
   }
 
-  async function defineFinishedWord() {
+  function renderResultGridPreview() {
+    resultGridPreview.replaceChildren();
+    if (!game?.guesses?.length) return;
+
+    game.guesses.forEach((guess) => {
+      const row = document.createElement("div");
+      row.className = "result-grid-row";
+
+      guess.evaluation.forEach((state) => {
+        const square = document.createElement("span");
+        square.className = `result-grid-square ${state}`;
+        square.setAttribute("aria-hidden", "true");
+        row.appendChild(square);
+      });
+
+      resultGridPreview.appendChild(row);
+    });
+  }
+
+  function openResultModal() {
+    if (!game?.completed) return;
+    renderCompletionUI();
+    resultOverlay.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+    closeResultBtn.focus();
+    loadFinishedWordDefinition();
+  }
+
+  function closeResultModal() {
+    if (!resultOverlay) return;
+    resultOverlay.classList.add("hidden");
+    document.body.classList.remove("modal-open");
+  }
+
+  async function loadFinishedWordDefinition() {
     if (!game?.completed) return;
 
     const answer = Game.answerForDate(game.dateKey);
-    defineWordBtn.disabled = true;
-    defineWordBtn.textContent = "Looking up…";
-    definitionPanel.classList.remove("hidden");
+    if (definitionLoadedFor === answer && definitionPanel.childElementCount > 0) return;
+
     definitionPanel.replaceChildren();
 
     const loading = document.createElement("p");
@@ -336,6 +389,7 @@ window.WordLeague = window.WordLeague || {};
 
       if (!entry || entry.senses.length === 0) {
         const unavailable = document.createElement("p");
+        unavailable.className = "definition-status";
         unavailable.textContent = `No short definition was available for ${answer}.`;
         definitionPanel.appendChild(unavailable);
       } else {
@@ -383,25 +437,30 @@ window.WordLeague = window.WordLeague || {};
         source.appendChild(sourceLink);
         definitionPanel.appendChild(source);
       }
+
+      definitionLoadedFor = answer;
     } catch (error) {
       definitionPanel.replaceChildren();
       const failed = document.createElement("p");
+      failed.className = "definition-status";
       failed.textContent = error?.message || "Could not load the definition right now.";
       definitionPanel.appendChild(failed);
-    } finally {
-      defineWordBtn.disabled = false;
-      defineWordBtn.textContent = `What does ${answer} mean?`;
+      definitionLoadedFor = null;
     }
   }
 
   async function copyResult() {
     const text = Game.shareGrid(game);
+    const original = copyResultBtn.textContent;
     try {
       await navigator.clipboard.writeText(text);
-      showMessage("Result copied.", false);
+      copyResultBtn.textContent = "Copied!";
     } catch {
-      showMessage("Could not copy automatically on this browser.", true);
+      copyResultBtn.textContent = "Copy failed";
     }
+    window.setTimeout(() => {
+      copyResultBtn.textContent = original;
+    }, 1600);
   }
 
   async function renderToday() {
