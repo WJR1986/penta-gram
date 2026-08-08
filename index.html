@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <title>Penta-Gram</title>
+  <title>Word League</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
       <button id="switch-player-btn" class="icon-button" type="button" aria-label="Switch player">☰</button>
-      <h1>Penta-Gram</h1>
+      <h1>WORD LEAGUE</h1>
       <button id="profile-button" class="profile-button" type="button" aria-label="Edit profile picture">
         <span id="header-avatar" class="avatar avatar-small" aria-hidden="true">?</span>
         <span id="player-badge" class="player-badge" aria-live="polite">—</span>
@@ -41,7 +41,11 @@
       <div id="finished-panel" class="finished-panel hidden">
         <h3 id="finished-title"></h3>
         <p id="finished-copy"></p>
-        <button id="copy-result-btn" class="primary-button" type="button">Copy result</button>
+        <div class="finished-actions">
+          <button id="copy-result-btn" class="primary-button" type="button">Copy result</button>
+          <button id="define-word-btn" class="secondary-button" type="button">What does it mean?</button>
+        </div>
+        <div id="definition-panel" class="definition-panel hidden" aria-live="polite"></div>
       </div>
     </section>
 
@@ -125,7 +129,7 @@
 
   <div id="player-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="player-title">
     <div class="player-card">
-      <p class="eyebrow">Penta-Gram</p>
+      <p class="eyebrow">WORD LEAGUE</p>
       <h2 id="player-title">Who are you?</h2>
       <p class="subtle">Choose your name. This browser will remember it; no password is required.</p>
       <div id="player-options" class="player-options"></div>
@@ -139,6 +143,7 @@
   <script src="js/profiles.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/dictionary.js"></script>
   <script src="js/database.js"></script>
   <script src="js/app.js"></script>
 </body>

@@ -15,6 +15,8 @@ window.WordLeague = window.WordLeague || {};
   const finishedTitle = document.getElementById("finished-title");
   const finishedCopy = document.getElementById("finished-copy");
   const copyResultBtn = document.getElementById("copy-result-btn");
+  const defineWordBtn = document.getElementById("define-word-btn");
+  const definitionPanel = document.getElementById("definition-panel");
   const todayList = document.getElementById("today-list");
   const leaderboard = document.getElementById("leaderboard");
   const personalStats = document.getElementById("personal-stats");
@@ -50,6 +52,7 @@ window.WordLeague = window.WordLeague || {};
 
     switchPlayerBtn.addEventListener("click", () => showPlayerOverlay(true));
     copyResultBtn.addEventListener("click", copyResult);
+    defineWordBtn.addEventListener("click", defineFinishedWord);
     profileButton.addEventListener("click", openProfile);
     editProfileBtn.addEventListener("click", openProfile);
     closeProfileBtn.addEventListener("click", () => showProfileOverlay(false));
@@ -272,6 +275,88 @@ window.WordLeague = window.WordLeague || {};
     finishedCopy.textContent = game.won
       ? `Today's word was ${answer}.`
       : `Today's word was ${answer}. Better luck tomorrow.`;
+    defineWordBtn.textContent = `What does ${answer} mean?`;
+    defineWordBtn.disabled = false;
+    definitionPanel.classList.add("hidden");
+    definitionPanel.replaceChildren();
+  }
+
+  async function defineFinishedWord() {
+    if (!game?.completed) return;
+
+    const answer = Game.answerForDate(game.dateKey);
+    defineWordBtn.disabled = true;
+    defineWordBtn.textContent = "Looking up…";
+    definitionPanel.classList.remove("hidden");
+    definitionPanel.replaceChildren();
+
+    const loading = document.createElement("p");
+    loading.className = "definition-status";
+    loading.textContent = `Looking up ${answer}…`;
+    definitionPanel.appendChild(loading);
+
+    try {
+      const entry = await WordLeague.Dictionary.lookup(answer);
+      definitionPanel.replaceChildren();
+
+      if (!entry || entry.senses.length === 0) {
+        const unavailable = document.createElement("p");
+        unavailable.textContent = `No short definition was available for ${answer}.`;
+        definitionPanel.appendChild(unavailable);
+      } else {
+        const heading = document.createElement("h4");
+        heading.textContent = entry.word.toUpperCase();
+        definitionPanel.appendChild(heading);
+
+        if (entry.pronunciation) {
+          const pronunciation = document.createElement("p");
+          pronunciation.className = "definition-pronunciation";
+          pronunciation.textContent = entry.pronunciation;
+          definitionPanel.appendChild(pronunciation);
+        }
+
+        const list = document.createElement("ol");
+        list.className = "definition-list";
+        entry.senses.forEach((sense) => {
+          const item = document.createElement("li");
+          if (sense.partOfSpeech) {
+            const part = document.createElement("span");
+            part.className = "definition-part";
+            part.textContent = `${sense.partOfSpeech}: `;
+            item.appendChild(part);
+          }
+          item.appendChild(document.createTextNode(sense.definition));
+
+          if (sense.example) {
+            const example = document.createElement("div");
+            example.className = "definition-example";
+            example.textContent = `Example: ${sense.example}`;
+            item.appendChild(example);
+          }
+          list.appendChild(item);
+        });
+        definitionPanel.appendChild(list);
+
+        const source = document.createElement("p");
+        source.className = "definition-source";
+        source.append("Definition data from Wiktionary via EnglishDictionaryAPI. ");
+        const sourceLink = document.createElement("a");
+        sourceLink.href = entry.sourceUrl;
+        sourceLink.target = "_blank";
+        sourceLink.rel = "noopener noreferrer";
+        sourceLink.textContent = "Full dictionary entry";
+        source.appendChild(sourceLink);
+        definitionPanel.appendChild(source);
+      }
+    } catch (error) {
+      definitionPanel.replaceChildren();
+      const failed = document.createElement("p");
+      failed.textContent = error?.message || "Could not load the definition right now.";
+      definitionPanel.appendChild(failed);
+    } finally {
+      defineWordBtn.disabled = false;
+      defineWordBtn.textContent = `What does ${answer} mean?`;
+    }
   }
 
   async function copyResult() {

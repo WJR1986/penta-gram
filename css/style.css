@@ -606,3 +606,65 @@ h2 { margin: 0 0 6px; }
   .preset-avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .avatar-medium { width: 36px; height: 36px; }
 }
+
+
+/* Stage 2C: optional result-word dictionary lookup */
+.finished-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.definition-panel {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  text-align: left;
+}
+
+.definition-panel h4 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+}
+
+.definition-pronunciation,
+.definition-status,
+.definition-source {
+  color: var(--muted);
+}
+
+.definition-pronunciation {
+  margin: 0 0 12px;
+}
+
+.definition-list {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.definition-list li + li {
+  margin-top: 10px;
+}
+
+.definition-part {
+  font-weight: 700;
+}
+
+.definition-example {
+  margin-top: 4px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.definition-source {
+  margin: 14px 0 0;
+  font-size: 0.82rem;
+}
+
+.definition-source a {
+  color: inherit;
+  font-weight: 700;
+}

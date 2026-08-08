@@ -1,0 +1,21 @@
+WORD LEAGUE — STAGE 2C UPGRADE
+
+Changes:
+- Keeps plural words valid as guesses.
+- Removes the clear regular plural TYRES from the daily-answer pool.
+- Does not remove singular words merely because they end in S.
+- Adds an optional online definition lookup after a player finishes.
+- Uses EnglishDictionaryAPI (Wiktionary-powered); no API key is required.
+
+INSTALL
+1. Back up your working project.
+2. Copy index.html, css/style.css and the js files from this upgrade over your project.
+3. This upgrade DOES NOT contain config.js, so your Supabase settings are not overwritten.
+4. Ctrl+F5 in the browser after copying.
+
+TEST
+- Finish/reset a test game.
+- The finished panel should show “What does WORD mean?”.
+- Click it; a definition should appear without leaving the page.
+
+No Supabase SQL changes are required.

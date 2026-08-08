@@ -12985,8 +12985,10 @@ zymes
 zymic`.trim().split("\n"));
 
 // UK-focused daily answer pool. The order is deliberately frozen and shuffled.
-// game.js advances one position per Europe/London calendar day, so an answer does
-// not repeat until this entire pool has been used.
+// Regular plurals formed by simply adding S/ES are excluded as daily answers
+// (but remain valid guesses), matching modern Wordle-style answer rules.
+// Irregular plurals may still appear. game.js advances one position per
+// Europe/London calendar day, so an answer does not repeat until this pool is used.
 WordLeague.ANSWER_WORDS = `ovary
 crass
 spook
@@ -13866,7 +13868,6 @@ frail
 optic
 quite
 chide
-tyres
 scold
 karma
 downy
