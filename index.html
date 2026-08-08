@@ -3,14 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
+  <meta id="theme-color-meta" name="theme-color" content="#f4f7fb">
   <title>Word League</title>
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem("wordLeague:theme");
+        const theme = saved === "dark" || saved === "light"
+          ? saved
+          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      } catch {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <button id="switch-player-btn" class="icon-button" type="button" aria-label="Switch player">☰</button>
+      <div class="header-actions">
+        <button id="switch-player-btn" class="icon-button" type="button" aria-label="Switch player" title="Switch player">☰</button>
+        <button id="theme-toggle" class="icon-button theme-toggle" type="button" aria-label="Use dark mode" title="Use dark mode">
+          <span id="theme-icon" aria-hidden="true">☾</span>
+        </button>
+      </div>
       <h1>WORD LEAGUE</h1>
       <button id="profile-button" class="profile-button" type="button" aria-label="Edit profile picture">
         <span id="header-avatar" class="avatar avatar-small" aria-hidden="true">?</span>

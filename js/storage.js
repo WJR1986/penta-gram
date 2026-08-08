@@ -3,6 +3,7 @@ window.WordLeague = window.WordLeague || {};
 WordLeague.Storage = (() => {
   const SELECTED_PLAYER_KEY = "wordLeague:selectedPlayer";
   const PROFILE_CACHE_KEY = "wordLeague:stage2b:profiles";
+  const THEME_KEY = "wordLeague:theme";
   // Stage 2B keeps the same game namespace, so existing Stage 2 games remain.
   const GAME_PREFIX = `wordLeague:stage2:${WordLeague.PUZZLE_VERSION}:`;
 
@@ -12,6 +13,17 @@ WordLeague.Storage = (() => {
 
   function setSelectedPlayer(player) {
     localStorage.setItem(SELECTED_PLAYER_KEY, player);
+  }
+
+  function getTheme() {
+    const value = localStorage.getItem(THEME_KEY);
+    return value === "dark" || value === "light" ? value : null;
+  }
+
+  function setTheme(theme) {
+    if (theme === "dark" || theme === "light") {
+      localStorage.setItem(THEME_KEY, theme);
+    }
   }
 
   function gameKey(player, dateKey) {
@@ -84,6 +96,8 @@ WordLeague.Storage = (() => {
   return {
     getSelectedPlayer,
     setSelectedPlayer,
+    getTheme,
+    setTheme,
     loadGame,
     saveGame,
     getAllGames,

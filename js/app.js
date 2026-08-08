@@ -10,6 +10,9 @@ window.WordLeague = window.WordLeague || {};
   const playerOptions = document.getElementById("player-options");
   const playerBadge = document.getElementById("player-badge");
   const switchPlayerBtn = document.getElementById("switch-player-btn");
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = document.getElementById("theme-icon");
+  const themeColorMeta = document.getElementById("theme-color-meta");
   const gameDateEl = document.getElementById("game-date");
   const finishedPanel = document.getElementById("finished-panel");
   const finishedTitle = document.getElementById("finished-title");
@@ -45,12 +48,14 @@ window.WordLeague = window.WordLeague || {};
   let pendingAvatar = null;
 
   async function init() {
+    initTheme();
     renderPlayerOptions();
     renderKeyboard();
     bindPhysicalKeyboard();
     bindTabs();
 
     switchPlayerBtn.addEventListener("click", () => showPlayerOverlay(true));
+    themeToggle.addEventListener("click", toggleTheme);
     copyResultBtn.addEventListener("click", copyResult);
     defineWordBtn.addEventListener("click", defineFinishedWord);
     profileButton.addEventListener("click", openProfile);
@@ -73,6 +78,36 @@ window.WordLeague = window.WordLeague || {};
     } else {
       showPlayerOverlay(true);
     }
+  }
+
+
+  function preferredTheme() {
+    const saved = Storage.getTheme();
+    if (saved) return saved;
+    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function initTheme() {
+    applyTheme(preferredTheme(), false);
+  }
+
+  function applyTheme(theme, persist = true) {
+    const next = theme === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    if (persist) Storage.setTheme(next);
+
+    const switchingTo = next === "dark" ? "light" : "dark";
+    themeIcon.textContent = next === "dark" ? "☀" : "☾";
+    themeToggle.setAttribute("aria-label", `Use ${switchingTo} mode`);
+    themeToggle.title = `Use ${switchingTo} mode`;
+    if (themeColorMeta) {
+      themeColorMeta.content = next === "dark" ? "#0d1117" : "#f4f7fb";
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+    applyTheme(current === "dark" ? "light" : "dark");
   }
 
   function renderPlayerOptions() {
