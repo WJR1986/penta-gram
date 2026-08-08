@@ -131,7 +131,7 @@ WordLeague.Game = (() => {
       }).join("")
     );
 
-    return `Word League ${game.dateKey} ${resultLabel(game)}\n\n${rows.join("\n")}`;
+    return `Penta-Gram ${game.dateKey} ${resultLabel(game)}\n\n${rows.join("\n")}`;
   }
 
   return {
