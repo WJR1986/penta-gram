@@ -11,6 +11,7 @@
   --border-strong: #9da8b7;
   --key: #dce3eb;
   --key-hover: #cfd8e3;
+  --key-absent: #6b7280;
   --correct: #538d4e;
   --present: #b59f3b;
   --absent: #6b7280;
@@ -40,8 +41,9 @@
   --muted: #9aa7b8;
   --border: #303a48;
   --border-strong: #647083;
-  --key: #353f4d;
-  --key-hover: #424e5f;
+  --key: #3b4656;
+  --key-hover: #4a576a;
+  --key-absent: #252b33;
   --correct: #538d4e;
   --present: #b59f3b;
   --absent: #4a525d;
@@ -381,7 +383,18 @@ h3 { color: var(--text); }
 .key.correct, .key.present, .key.absent { color: #fff; }
 .key.correct { background: var(--correct); }
 .key.present { background: var(--present); }
-.key.absent { background: var(--absent); }
+/* Keyboard states deliberately use stronger contrast than board tiles.
+   In dark mode, unused keys remain slate while spent/absent keys become charcoal. */
+.key.absent { background: var(--key-absent); }
+
+:root[data-theme="dark"] .key:not(.correct):not(.present):not(.absent) {
+  border: 1px solid rgba(255, 255, 255, .055);
+}
+
+:root[data-theme="dark"] .key.absent {
+  color: #d7dde5;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .025);
+}
 
 .result-card {
   width: min(100%, 460px);
